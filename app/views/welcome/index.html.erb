@@ -1,37 +1,70 @@
 <html>
 	<head>
 		<title>HTML5 Webcam Test</title>
+
+		<style>
+			h1 {
+				position: relative;
+				text-align: left;
+			}
+
+			#webcamStream {
+				position: relative;
+				top: 10px;
+			}
+
+			#snapButton {
+				position: relative;
+				top: 10px;
+			}
+
+			#screenshotCanvas {
+				position: relative;
+				top: 10px;
+				border-style: solid;
+				border-width: 2px;
+				border-color: black;
+			}
+		</style>
+
 	</head>
 
 	<body>
 		<h1>HTML5 Webcam Test</h1>
-
-		<video width="400" height="400" autoplay></video> 
-          	
+		<video id="webcamStream" width="640" height="480" autoplay></video> <br>
+		<button id="snapButton" onclick="snapshot()">Snap a screenshot!</button> <br>
+		<h1>Screen Snapshot</h1>
+		<canvas id="screenshotCanvas" width="640" height="480"></canvas><br>
+		
         <!-- Courtesy of: http://www.html5rocks.com/en/tutorials/getusermedia/intro/ -->
 		<script>
 			window.URL = window.URL || window.webkitURL;
-			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||navigator.mozGetUserMedia || navigator.msGetUserMedia;
-			var video = document.querySelector('video');
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||navigator.mozGetUserMedia || navigator.msGetUserMedia;	
+			var video = document.getElementById("webcamStream");
+			var canvas = document.getElementById("screenshotCanvas");
+			var context = canvas.getContext("2d");
 
 			if (navigator.getUserMedia) {
-				navigator.getUserMedia({audio: false, video: true}, function(stream) {
-					video.src = window.URL.createObjectURL(stream);
-					video.play();
-				}, onFailSoHard);
-			} else {
-				alert('getUserMedia() is not supported in your browser');
-			}
+        		navigator.getUserMedia({audio: false, video: true}, function(stream) {
+         			video.src = window.URL.createObjectURL(stream);
+          		video.play();
+        		}, onFail);
+      		} 
 
-			function onFailSoHard(e) {
+			function onFail(e) {
 				if (e.code == 1) {
 					alert('User denied access to their camera');
+					console.log('User denied access', e);
 				} else {
 					alert('getUserMedia() not supported in your browser.');
+					console.log('Browser does not support API', e);
 				}
 			}
 
-		</script>
+			function snapshot() {
+  				context.drawImage(video, 0, 0, 640, 480);
+			}
 
+		</script>
 	</body>
 </html>
